@@ -34,7 +34,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'collabhub.App'
+    mainClass = 'service.recruteur.App'
 }
 
 tasks.named('test') {
