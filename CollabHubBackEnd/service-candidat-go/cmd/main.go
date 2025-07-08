@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"service-candidat-go/config"
+	"service-candidat-go/internal/model"
 	"service-candidat-go/routes"
 
 	"github.com/gin-gonic/gin"
@@ -28,8 +29,12 @@ func main() {
 	}
 	defer config.CloseDatabase()
 
-	// Auto-migration (optionnel)
-	// db.AutoMigrate(&model.Candidat{})
+	// Auto-migration (création automatique des tables)
+	log.Println("🔄 Démarrage de l'auto-migration...")
+	if err := db.AutoMigrate(&model.Candidat{}); err != nil {
+		log.Fatal("❌ Erreur migration:", err)
+	}
+	log.Println("✅ Migration des tables réussie")
 
 	// Configurer Gin
 	gin.SetMode(gin.DebugMode)
