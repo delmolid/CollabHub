@@ -1,1 +1,26 @@
+# Variables d'environnement
+.env
+.env.local
+.env.production
+.env.staging
+
+# Binaires Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+tmp/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db

@@ -1,0 +1,52 @@
+# Fichiers et dossiers à ignorer lors du build Docker
+
+# Binaires
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+main
+
+# Fichiers de test
+*.test
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*~
+
+# Logs
+*.log
+logs/
+
+# Dossiers de build et cache
+.git/
+.gitignore
+README.md
+.env
+.env.local
+.env.*.local
+
+# Air (live reload)
+.air.toml
+tmp/
+
+# Documentation
+docs/
+*.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# OS
+.DS_Store
+Thumbs.db 

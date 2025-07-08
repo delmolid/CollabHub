@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: collabhub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: candidat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - collabhub-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d candidat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service Candidat (Go)
+  service-candidat:
+    build:
+      context: ./service-candidat-go
+      dockerfile: Dockerfile
+    container_name: collabhub-service-candidat
+    restart: unless-stopped
+    environment:
+      # Configuration Base de données
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_NAME: candidat
+      DB_SSL_MODE: disable
+      # Configuration Serveur
+      SERVER_PORT: 8080
+      # Mode environnement
+      GIN_MODE: release
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - collabhub-network
+    volumes:
+      - service_candidat_logs:/var/log/app
+
+  # Service Recruteur (Java)
+  service-recruteur:
+    build:
+      context: ./service-recruteur
+      dockerfile: Dockerfile
+    container_name: collabhub-service-recruteur
+    restart: unless-stopped
+    environment:
+      # Configuration Base de données
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/candidat
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      # Configuration JPA/Hibernate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: false
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      # Configuration Serveur
+      SERVER_PORT: 8081
+      # Configuration Logging
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - collabhub-network
+    volumes:
+      - service_recruteur_logs:/var/log/app
+
+# Volumes persistants
+volumes:
+  postgres_data:
+    driver: local
+  service_candidat_logs:
+    driver: local
+  service_recruteur_logs:
+    driver: local
+
+# Réseau personnalisé
+networks:
+  collabhub-network:
+    driver: bridge 
