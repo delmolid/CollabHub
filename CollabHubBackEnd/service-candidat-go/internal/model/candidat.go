@@ -26,7 +26,7 @@ type Candidat struct {
 	Address       *string   `json:"address" gorm:"column:adress"`                                     // @Column(name = "adress") - nullable (même faute que Java)
 	LinkLinkedin  *string   `json:"linkLinkedin" gorm:"column:link_linkedin"`                         // @Column(name = "link_linkedin") - nullable
 	Description   string    `json:"description" gorm:"column:description;type:text;not null"`         // @NotBlank @Column(name = "description")
-	LinkGithub    *string   `json:"linkGithub" gorm:"column:link_Github"`                             // @Column(name = "link_Github") - nullable (même casse que Java)
+	LinkGithub    *string   `json:"linkGithub" gorm:"column:link_github"`                             // @Column(name = "link_github") - nullable (convention PostgreSQL)
 	LinkPortfolio *string   `json:"linkPortfolio" gorm:"column:link_portfolio"`                       // @Column(name = "link_portfolio") - nullable
 	Language      Language  `json:"language" gorm:"column:language;type:varchar(255);not null"`       // @NotNull @Enumerated(EnumType.STRING)
 	Interests     string    `json:"interests" gorm:"column:interests;type:text;not null"`             // @NotBlank @Column(name = "interests")
