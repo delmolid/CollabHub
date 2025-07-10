@@ -1,389 +1,251 @@
 
 # 🚀 CollabHub
 
-Plateforme de collaboration entre candidats et recruteurs basée sur une architecture microservices moderne.
+**Plateforme de collaboration entre candidats et recruteurs**  
+*Architecture moderne avec API Go et Frontend WordPress*
 
-## 📋 Table des matières
+## 🏗️ **Architecture du Projet**
 
-- [Architecture](#architecture)
-- [Technologies](#technologies)
-- [Prérequis](#prérequis)
-- [Configuration de la base de données](#configuration-de-la-base-de-données)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [API Documentation](#api-documentation)
-- [Structure du projet](#structure-du-projet)
-- [Développement](#développement)
-- [Contribution](#contribution)
-
-## 🏗️ Architecture
-
-CollabHub utilise une architecture microservices polyglotte composée de :
-
-### Backend Microservices
-- **service-candidat (Java)** : Gestion des profils candidats (Spring Boot) (Migration en en cours vers Golang) 
-- **service-candidat-go (Go)** : Version Go du service candidat (Gin)
-- **service-recruteur (Java)** : Gestion des offres d'emploi et recruteurs (Spring Boot) (en cours de developpement)
-
-### Frontend
-- **CollabHubFrontEnd (Angular)** : Interface utilisateur moderne
-
-### Base de données
-- **PostgreSQL** : Base de données relationnelle pour tous les services
-
-## 🛠️ Technologies
-
-### Backend
-- **Java 17** avec Spring Boot 3.2
-- **Go 1.21+** avec Gin Framework
-- **PostgreSQL 12+**
-- **GORM** (Go ORM)
-- **JPA/Hibernate** (Java ORM)
-
-### Frontend
-- **Angular 17+**
-- **TypeScript**
-- **HTML5/CSS3**
-
-
-## 📋 Prérequis
-
-- **Java 17+**
-- **Go 1.21+**
-- **Node.js 18+**
-- **PostgreSQL 12+**
-- **Angular CLI**
-- **Docker** (optionnel)
-
-## 🗄️ Configuration de la base de données
-
-### Installation PostgreSQL
-
-```bash
-# macOS avec Homebrew
-brew install postgresql
-brew services start postgresql
-
-# Ubuntu/Debian
-sudo apt update
-sudo apt install postgresql postgresql-contrib
-sudo systemctl start postgresql
-
-# Windows
-# Télécharger depuis https://www.postgresql.org/download/windows/
+```
+📁 CollabHub/
+├── 🐹 CollabHubBackEnd/       # API REST (Go + Java) + PostgreSQL
+├── 🌐 CollabHubWordPress/     # Frontend WordPress + MySQL  
+└── 🚀 start-collabhub.sh      # Script de démarrage complet
 ```
 
-### Configuration des bases de données
-
-1. **Créer les bases de données** :
-```bash
-# Se connecter à PostgreSQL
-psql -U postgres
-
-# Créer les bases de données
-CREATE DATABASE candidatdb;
-CREATE DATABASE recruteurdb;
-
-# Vérifier la création
-\l
-
-# Quitter psql
-\q
-```
-
-2. **Initialiser les tables pour le service candidat** :
-```bash
-# Naviguer vers le répertoire du projet
-cd CollabHubBackEnd/service-candidat/app/src/main/resources
-
-# Exécuter le script SQL
-psql -U postgres -d candidatdb -f candidatDB.sql
-```
-
-3. **Vérifier la création des tables** :
-```bash
-# Se connecter à la base candidat
-psql -U postgres -d candidatdb
-
-# Lister les tables créées
-\dt
-
-# Voir la structure de la table candidat
-\d candidat;
-
-# Quitter psql
-\q
-```
-
-## 🚀 Installation
-
-### 1. Backend - Service Candidat Java
-
-```bash
-# Naviguer vers le service Java
-cd CollabHubBackEnd/service-candidat
-
-# Créer le fichier .env
-cat > .env << EOF
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=candidatdb
-DB_USERNAME=postgres
-DB_PASSWORD=votre_mot_de_passe
-JAVA_SERVICE_PORT=8081
-EOF
-
-# Compiler et lancer
-./gradlew build
-./gradlew bootRun
-```
-
-### 2. Backend - Service Candidat Go
-
-```bash
-# Naviguer vers le service Go
-cd CollabHubBackEnd/service-candidat-go
-
-# Créer le fichier .env
-cat > .env << EOF
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=candidatdb
-DB_USERNAME=postgres
-DB_PASSWORD=votre_mot_de_passe
-SERVER_PORT=8082
-EOF
-
-# Installer les dépendances
-go mod tidy
-
-# Lancer le service
-go run main.go
-```
-
-### 3. Backend - Service Recruteur
-
-```bash
-# Naviguer vers le service recruteur
-cd CollabHubBackEnd/service-recruteur
-
-# Créer le fichier .env
-cat > .env << EOF
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=recruteurdb
-DB_USERNAME=postgres
-DB_PASSWORD=votre_mot_de_passe
-RECRUTEUR_SERVICE_PORT=8083
-EOF
-
-# Compiler et lancer
-./gradlew build
-./gradlew bootRun
-```
-
-### 4. Frontend Angular
-
-```bash
-# Naviguer vers le frontend
-cd CollabHubFrontEnd
-
-# Installer les dépendances
-npm install
-
-# Lancer en mode développement
-ng serve
-
-# Ou avec npm
-npm start
-```
-
-## 📱 Utilisation
-
-### Accès aux applications
-
-- **Frontend** : `http://localhost:4200`
-- **Service Candidat Java** : `http://localhost:8081`
-- **Service Candidat Go** : `http://localhost:8082`
-- **Service Recruteur** : `http://localhost:8083`
-
-### Health Checks
-
-```bash
-# Vérifier l'état des services
-curl http://localhost:8081/actuator/health  # Java
-curl http://localhost:8082/health           # Go
-curl http://localhost:8083/actuator/health  # Recruteur
-```
-
-### Tests API
-
-```bash
-# Service Candidat Java
-curl http://localhost:8081/api/v1/candidat
-
-# Service Candidat Go
-curl http://localhost:8082/api/v1/candidat
-
-# Service Recruteur
-curl http://localhost:8083/api/v1/recruteur
-```
-
-## 📚 API Documentation
-
-### Service Candidat (Java & Go)
-
-| Méthode | Endpoint | Description | Status |
-|---------|----------|-------------|--------|
-| `GET` | `/api/v1/candidat` | Liste des candidats | ✅ Implémenté |
-| `GET` | `/api/v1/candidat/{id}` | Candidat par ID | 🔄 En cours |
-| `POST` | `/api/v1/candidat` | Créer un candidat | 🔄 En cours |
-| `PUT` | `/api/v1/candidat/{id}` | Modifier un candidat | 🔄 En cours |
-| `DELETE` | `/api/v1/candidat/{id}` | Supprimer un candidat | 🔄 En cours |
-
-### Service Recruteur
-
-| Méthode | Endpoint | Description | Status |
-|---------|----------|-------------|--------|
-| `GET` | `/api/v1/recruteur` | Liste des recruteurs | 📋 Planifié |
-| `GET` | `/api/v1/jobs` | Liste des offres | 📋 Planifié |
-| `POST` | `/api/v1/jobs` | Créer une offre | 📋 Planifié |
-
-### Modèle de données Candidat
-
-```json
-{
-  "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@example.com",
-  "phone": "+33123456789",
-  "picture": "https://example.com/photo.jpg",
-  "dateBirth": "1990-05-15T00:00:00Z",
-  "address": "123 Rue de la Paix, Paris",
-  "linkLinkedin": "https://linkedin.com/in/johndoe",
-  "description": "Développeur Full Stack passionné",
-  "linkGithub": "https://github.com/johndoe",
-  "linkPortfolio": "https://johndoe.dev",
-  "language": "FRENCH",
-  "interests": "Programmation, Technologies, Innovation",
-  "cv": "cv-john-doe.pdf",
-  "createdAt": "2024-01-15T10:30:00Z"
-}
-```
-
-## 🔧 Développement
-
-### Commandes utiles
-
-```bash
-# Backend Java
-./gradlew clean build
-./gradlew test
-./gradlew bootRun
-
-# Backend Go
-go mod tidy
-go test ./...
-go run main.go
-go build -o service-candidat-go
-
-# Frontend Angular
-ng build
-ng test
-ng serve
-ng generate component nom-composant
-```
-
-### Variables d'environnement
-
-Chaque service utilise un fichier `.env` pour la configuration :
-
-```env
-# Exemple pour service-candidat-go
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=candidatdb
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-SERVER_PORT=8082
-APP_ENV=development
-```
-
-### Docker (Optionnel)
-
-```bash
-# Construire et lancer tous les services
-docker-compose up -d
-
-# Lancer seulement la base de données
-docker-compose up -d postgres
-
-# Voir les logs
-docker-compose logs -f service-candidat-go
-```
-
-## 🧪 Tests
-
-```bash
-# Tests backend Java
-cd CollabHubBackEnd/service-candidat
-./gradlew test
-
-# Tests backend Go
-cd CollabHubBackEnd/service-candidat-go
-go test ./...
-
-# Tests frontend
-cd CollabHubFrontEnd
-npm test
-```
-
-## 🚀 Déploiement
-
-### Production
-
-1. **Configurer les variables d'environnement de production**
-2. **Construire les images Docker**
-3. **Déployer avec Kubernetes ou Docker Compose**
-
-```bash
-# Build production
-go build -o service-candidat-go main.go
-./gradlew bootJar
-ng build --prod
-```
-
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit les changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une Pull Request
-
-### Standards de code
-
-- **Java** : Suivre les conventions Spring Boot
-- **Go** : Utiliser `gofmt` et `golint`
-- **Angular** : Suivre le style guide Angular
-
-## 📊 Statut du projet
-
-| Composant | Status | Version |
-|-----------|--------|---------|
-| service-candidat (Java) | ✅ Opérationnel | 1.0.0 |
-| service-candidat-go | ✅ Opérationnel | 1.0.0 |
-| service-recruteur | 🔄 En développement | 0.1.0 |
-| Frontend Angular | 🔄 En développement | 0.1.0 |
-
-## 📞 Support
-
-Pour toute question ou problème :
-- Créer une issue GitHub
-- Contacter l'équipe de développement
+### **🎯 Architecture Finalisée**
+- ✅ **WordPress** comme frontend unique et professionnel
+- ✅ **Séparation claire** : Backend API ↔ Frontend WordPress  
+- ✅ **Votre maquette** parfaitement intégrée
+- ✅ **Architecture simplifiée** : focus sur l'efficacité
 
 ---
 
-**Développé par Molid NOUR AWALEH**  
-*Architecture microservices polyglotte avec Java, Go et Angular*
+## 🚀 **Démarrage rapide**
+
+### **Option 1 : Démarrage complet automatique**
+```bash
+# Lancer tout l'environnement en une commande
+./start-collabhub.sh
+```
+
+### **Option 2 : Démarrage manuel étape par étape**
+```bash
+# 1. Backend API (Go + PostgreSQL)
+cd CollabHubBackEnd
+./start.sh
+
+# 2. Frontend WordPress (MySQL + WordPress)  
+cd ../CollabHubWordPress
+./start-wordpress.sh
+```
+
+### **🌐 Services disponibles après démarrage :**
+- **Frontend WordPress** : http://localhost
+- **Backend API Go** : http://localhost:8080
+- **PostgreSQL** : localhost:5432
+- **MySQL WordPress** : localhost:3306
+
+---
+
+## 📋 **Architecture détaillée**
+
+### **🐹 Backend (CollabHubBackEnd/)**
+```
+🗄️ PostgreSQL (Port 5432)
+    ↑
+🐹 service-candidat-go (Port 8080) - API principale en Go
+🔶 service-recruteur (Port 8081) - API Java Spring Boot  
+```
+
+**Technologies :**
+- **Go 1.21+** avec Gin Framework
+- **Java 17** avec Spring Boot
+- **PostgreSQL** avec GORM
+- **Docker & Docker Compose**
+
+### **🌐 Frontend (CollabHubWordPress/)**
+```
+🗄️ MySQL (Port 3306)
+    ↑
+🌐 WordPress (Port 80/443) 
+    ↓ API Calls
+🔗 Backend API (localhost:8080)
+```
+
+**Technologies :**
+- **WordPress** dernière version
+- **PHP** avec thème custom
+- **MySQL** pour WordPress
+- **AJAX** pour communication API
+
+---
+
+## 🎯 **Fonctionnalités implémentées**
+
+### ✅ **Backend API Go**
+- **CRUD Candidats** complet
+- **Auto-migration** GORM
+- **Validation** des données
+- **CORS** configuré
+- **Health checks**
+
+### ✅ **Frontend WordPress**
+- **Page profil candidat** (votre maquette)
+- **Liste des candidats**
+- **Communication API** temps réel
+- **Interface responsive**
+- **Administration WordPress**
+
+### ✅ **Fonctionnalités principales**
+- ✅ Création/modification profils candidats
+- ✅ Gestion des informations personnelles
+- ✅ Liens professionnels (LinkedIn, GitHub, Portfolio)
+- ✅ Sauvegarde automatique
+- ✅ Messages de feedback utilisateur
+
+---
+
+## 📚 **Documentation**
+
+### **📖 Guides détaillés :**
+- **Backend** : [`./CollabHubBackEnd/README.md`](./CollabHubBackEnd/README.md)
+- **WordPress** : [`./CollabHubWordPress/README.md`](./CollabHubWordPress/README.md)
+- **API Endpoints** : http://localhost:8080/health
+
+### **🔧 Pages importantes :**
+- **📝 Profil candidat** : http://localhost/profil-candidat
+- **👥 Liste candidats** : http://localhost/candidats  
+- **⚙️ WordPress Admin** : http://localhost/wp-admin
+- **🔍 API Health** : http://localhost:8080/health
+
+---
+
+## 🛠️ **Développement**
+
+### **🔄 Workflow recommandé :**
+
+1. **Modifier l'API** (nouveau champ, endpoint)
+   ```bash
+   cd CollabHubBackEnd/service-candidat-go
+   # Modifier model, service, controller
+   docker-compose restart service-candidat
+   ```
+
+2. **Modifier le frontend** (design, fonctionnalité)
+   ```bash
+   cd CollabHubWordPress
+   # Modifier style.css, templates/, functions.php
+   # Les changements sont immédiats
+   ```
+
+3. **Tester l'intégration**
+   ```bash
+   curl http://localhost:8080/api/v1/candidat
+   # Visiter http://localhost/profil-candidat
+   ```
+
+### **🐛 Debug et logs :**
+```bash
+# Logs backend
+cd CollabHubBackEnd && docker-compose logs service-candidat
+
+# Logs WordPress  
+cd CollabHubWordPress && docker-compose logs wordpress
+
+# Statut des services
+docker-compose ps
+```
+
+---
+
+## 🎨 **Personnalisation**
+
+### **Frontend WordPress :**
+- **Design** : Modifier `CollabHubWordPress/style.css`
+- **Templates** : Modifier `CollabHubWordPress/templates/`
+- **API Logic** : Modifier `CollabHubWordPress/functions.php`
+
+### **Backend API :**
+- **Modèles** : `CollabHubBackEnd/service-candidat-go/internal/model/`
+- **Endpoints** : `CollabHubBackEnd/service-candidat-go/internal/controller/`
+- **Business Logic** : `CollabHubBackEnd/service-candidat-go/internal/service/`
+
+---
+
+## 🔧 **Gestion des services**
+
+### **Commandes utiles :**
+```bash
+# Démarrer tout
+./start-collabhub.sh
+
+# Arrêter tout  
+cd CollabHubWordPress && docker-compose down
+cd CollabHubBackEnd && docker-compose down
+
+# Redémarrer un service
+cd CollabHubBackEnd && docker-compose restart service-candidat
+
+# Logs en temps réel
+cd CollabHubWordPress && docker-compose logs -f wordpress
+```
+
+### **Ports utilisés :**
+- **80** : WordPress Frontend
+- **3306** : MySQL (WordPress)
+- **5432** : PostgreSQL (Backend)
+- **8080** : API Go (service-candidat)
+- **8081** : API Java (service-recruteur)
+
+---
+
+## 🚀 **Prochaines étapes**
+
+### **Phase 1 : Complétude**
+- [ ] Upload de photos de profil
+- [ ] Gestion formations/expériences  
+- [ ] API recruteur opérationnelle
+- [ ] Authentification utilisateurs
+
+### **Phase 2 : Fonctionnalités avancées**
+- [ ] Dashboard recruteur WordPress
+- [ ] Système de matching
+- [ ] Notifications email
+- [ ] Recherche avancée
+
+### **Phase 3 : Production**
+- [ ] Déploiement cloud
+- [ ] CDN pour les assets
+- [ ] Monitoring & logs
+- [ ] Tests automatisés
+
+---
+
+## 🤝 **Contribution**
+
+1. Fork le projet
+2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. Commit les changements (`git commit -m 'Ajouter nouvelle fonctionnalité'`)
+4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
+5. Créer une Pull Request
+
+---
+
+## 📝 **Notes importantes**
+
+### **⚠️ Pré-requis :**
+- **Docker Desktop** installé et lancé
+- **Ports 80, 3306, 5432, 8080, 8081** disponibles
+- **macOS, Linux ou Windows** avec Bash
+
+### **🔧 Dépannage courant :**
+- **Port 80 occupé** : Arrêter Apache/Nginx local
+- **API indisponible** : Vérifier que le backend est démarré en premier
+- **WordPress pages 404** : Aller dans WP-Admin > Réglages > Permaliens > Enregistrer
+
+**🎯 Votre maquette de profil candidat est maintenant 100% fonctionnelle !**
+
+---
+
+*Dernière mise à jour : Juillet 2024*
