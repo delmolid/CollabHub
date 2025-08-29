@@ -126,24 +126,24 @@ cd ../CollabHubWordPress
 ### **🔄 Workflow recommandé :**
 
 1. **Modifier l'API** (nouveau champ, endpoint)
-   ```bash
+```bash
    cd CollabHubBackEnd/service-candidat-go
    # Modifier model, service, controller
    docker-compose restart service-candidat
    ```
 
 2. **Modifier le frontend** (design, fonctionnalité)
-   ```bash
+```bash
    cd CollabHubWordPress
    # Modifier style.css, templates/, functions.php
    # Les changements sont immédiats
    ```
 
 3. **Tester l'intégration**
-   ```bash
+```bash
    curl http://localhost:8080/api/v1/candidat
    # Visiter http://localhost/profil-candidat
-   ```
+```
 
 ### **🐛 Debug et logs :**
 ```bash
